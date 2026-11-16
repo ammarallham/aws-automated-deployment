@@ -1,0 +1,36 @@
+---
+# Main playbook. Order matters: DB first, then web (the web app needs the DB).
+
+- name: Wait until the new servers are ready
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Wait for SSH to accept connections
+      ansible.builtin.wait_for_connection:
+        delay: 5
+        timeout: 300
+
+    - name: Wait for cloud-init (first boot) to finish so apt is not locked
+      ansible.builtin.command: cloud-init status --wait
+      changed_when: false
+      failed_when: false
+
+- name: Base setup on every server (hardening + Docker)
+  hosts: all
+  become: true
+  roles:
+    - common
+    - docker
+
+- name: Database server
+  hosts: db
+  become: true
+  roles:
+    - db
+    - backup
+
+- name: Web server
+  hosts: web
+  become: true
+  roles:
+    - web

@@ -1,0 +1,8 @@
+---
+backup_script_path: /usr/local/bin/db-backup.sh
+backup_dir: /var/backups/db
+backup_log: /var/log/db-backup.log
+backup_local_keep_days: 7
+backup_cron_hour: "2"
+backup_cron_minute: "0"
+backup_compose_file: "{{ db_app_dir }}/docker-compose.yml"

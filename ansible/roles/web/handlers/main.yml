@@ -1,0 +1,15 @@
+---
+- name: Rebuild and recreate the web stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ web_app_dir }}"
+    project_name: webapp
+    state: present
+    build: always
+
+- name: Restart nginx
+  community.docker.docker_compose_v2:
+    project_src: "{{ web_app_dir }}"
+    project_name: webapp
+    services:
+      - nginx
+    state: restarted

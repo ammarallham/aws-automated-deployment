@@ -1,0 +1,10 @@
+---
+web_app_dir: /opt/webapp
+web_nginx_image: nginx:1.27-alpine
+web_flask_port: 5000
+
+# Files copied from the repository's app/ directory to the server.
+web_flask_files:
+  - Dockerfile
+  - requirements.txt
+  - app.py

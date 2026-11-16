@@ -1,0 +1,49 @@
+---
+- name: Install AWS CLI and cron
+  ansible.builtin.apt:
+    name:
+      - awscli
+      - cron
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+    lock_timeout: 300
+
+- name: Create the local backup directory
+  ansible.builtin.file:
+    path: "{{ backup_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Install the backup script
+  ansible.builtin.template:
+    src: db-backup.sh.j2
+    dest: "{{ backup_script_path }}"
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Rotate the backup log
+  ansible.builtin.copy:
+    dest: /etc/logrotate.d/db-backup
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      {{ backup_log }} {
+          weekly
+          rotate 4
+          compress
+          missingok
+          notifempty
+      }
+
+- name: Schedule the backup with cron (daily)
+  ansible.builtin.cron:
+    name: Postgres backup to S3
+    user: root
+    minute: "{{ backup_cron_minute }}"
+    hour: "{{ backup_cron_hour }}"
+    job: "{{ backup_script_path }} >> {{ backup_log }} 2>&1"

@@ -1,0 +1,27 @@
+# Managed by Ansible - do not edit by hand.
+services:
+  flask:
+    build: ./flask
+    image: webapp-flask:latest
+    container_name: flask
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - "{{ web_flask_port }}"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:{{ web_flask_port }}/health', timeout=3).status == 200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  nginx:
+    image: {{ web_nginx_image }}
+    container_name: nginx
+    restart: unless-stopped
+    depends_on:
+      - flask
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
