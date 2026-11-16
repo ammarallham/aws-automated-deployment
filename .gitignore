@@ -1,0 +1,29 @@
+# ---- Secrets & local state (NEVER commit) ----
+.state/
+.vault_pass
+ansible/group_vars/all/vault.yml
+*.pem
+*.key
+id_ed25519*
+id_rsa*
+.env
+
+# ---- Generated ----
+ansible/inventory/hosts.ini
+.venv/
+__pycache__/
+*.pyc
+*.retry
+
+# ---- Terraform ----
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*.tfvars
+terraform/crash.log
+terraform/*.tfplan
+# (terraform/.terraform.lock.hcl SHOULD be committed)
+
+# ---- Misc ----
+.DS_Store
+*.log
