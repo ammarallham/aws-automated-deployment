@@ -1,0 +1,42 @@
+---
+- name: Create the DB application directory
+  ansible.builtin.file:
+    path: "{{ db_app_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Write the Docker Compose file for Postgres
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ db_app_dir }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Write the secrets file (.env) from Ansible Vault
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ db_app_dir }}/.env"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+- name: Allow Postgres from the web server only (host firewall)
+  community.general.ufw:
+    rule: allow
+    port: "{{ db_port | string }}"
+    proto: tcp
+    from_ip: "{{ hostvars[groups['web'][0]].private_ip }}"
+    comment: Postgres from web server
+  when: common_enable_ufw | bool
+
+- name: Start Postgres with Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ db_app_dir }}"
+    project_name: db
+    state: present
+    wait: true
+    wait_timeout: 120

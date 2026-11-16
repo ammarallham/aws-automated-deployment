@@ -1,0 +1,10 @@
+# EXAMPLE ONLY - the real file is group_vars/all/vault.yml and is created (random + encrypted)
+# by ./deploy.sh on first run. It is git-ignored.
+#
+# To create / edit it manually:
+#   openssl rand -base64 32 > .vault_pass && chmod 600 .vault_pass
+#   ANSIBLE_VAULT_PASSWORD_FILE=.vault_pass ansible-vault create ansible/group_vars/all/vault.yml
+#   ANSIBLE_VAULT_PASSWORD_FILE=.vault_pass ansible-vault edit   ansible/group_vars/all/vault.yml
+#
+# Content of the (decrypted) file:
+vault_postgres_password: "change-me-to-a-long-random-string"

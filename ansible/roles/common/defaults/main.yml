@@ -1,0 +1,9 @@
+---
+common_packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - jq
+  - ufw
+  - fail2ban
+  - unattended-upgrades
